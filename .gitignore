@@ -1,4 +1,14 @@
-/venv/
+venv/
 requirements.txt
-__pycache__
-/shop/migrations/
+__pycache__/
+shop/migrations/
+ECshopper/settings.py
+*.log
+db.sqlite3
+medhia/
+migrations/
+
+.env
+.vscode/
+.idea/
+
