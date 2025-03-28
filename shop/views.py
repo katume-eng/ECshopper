@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, CartItem, Order, OrderItem
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout, authenticate
 from django.db.models import F, Sum
+from .forms import UserRegisterForm,UserLoginForm
 
 def product_list(request):
     products = Product.objects.all()
@@ -10,6 +12,33 @@ def product_list(request):
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     return render(request, 'shop/product_detail.html', {'product': product})
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # 登録後に自動ログイン
+            return redirect('product_list')  # トップページに移動
+    else:
+        form = UserRegisterForm()
+    return render(request, 'shop/register.html', {'form': form})
+
+def user_login(request):
+    if request.method == 'POST':
+        form = UserLoginForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('product_list')
+    else:
+        form = UserLoginForm()
+    return render(request, 'shop/login.html', {'form': form})
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return redirect('user_login')
 
 @login_required
 def add_to_cart(request, product_id):
